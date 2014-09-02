@@ -16,18 +16,18 @@ var BOOKID = system.args[1];
 var FOLDER = system.args[2];
 
 //set view port size
-if(system.args.length >= 4){
-    if(1 == system.args[3]){
-        page.viewportSize = {
-            width: 800,
-            height: 1600
-        };
-    }else {
-        page.viewportSize = {
-            width: 2560,
-            height: 1600
-        };
-    }
+if (system.args.length >= 4 && 1 == system.args[3]) {
+
+    page.viewportSize = {
+        width: 800,
+        height: 1600
+    };
+
+} else {
+    page.viewportSize = {
+        width: 2560,
+        height: 1600
+    };
 }
 
 
@@ -79,10 +79,10 @@ var _closeHelper = function() {
 var _isEnd = function() {
     return page.evaluate(function() {
         var footers = jQuery('.j-md-footer div');
-        if(footers.length > 1){
+        if (footers.length > 1) {
             var last = footers[footers.length - 1];
             var texts = $(last).text().split('/');
-            if(2 == texts.length){
+            if (2 == texts.length) {
                 return texts[0] == texts[1];
             }
         }
