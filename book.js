@@ -1,8 +1,34 @@
+var system = require('system');
 var page = require('webpage').create();
-page.viewportSize = {
-    width: 2560,
-    height: 1600
-};
+
+if (system.args.length < 3) {
+    console.log('Usage:');
+    console.log('phantomjs book.js BOOKID FOLDER FORMAT')
+    console.log('BOOKID: id from url; FOLDER: where to save files;');
+    console.log('FORMAT: Optional, input value 1 or 2, default is 2');
+
+    phantom.exit()
+
+}
+
+var BOOKID = system.args[1];
+
+var FOLDER = system.args[2];
+
+//set view port size
+if(system.args.length >= 4){
+    if(1 == system.args[3]){
+        page.viewportSize = {
+            width: 800,
+            height: 1600
+        };
+    }else {
+        page.viewportSize = {
+            width: 2560,
+            height: 1600
+        };
+    }
+}
 
 
 
@@ -81,7 +107,7 @@ var _renderBook = function() {
         if (_isTextLoaded() && _isPicLoaded()) {
             _closeAd();
             _closeHelper();
-            var fileName = 'book/' + _getPageNum() + '.png';
+            var fileName = FOLDER + '/' + _getPageNum() + '.png';
             _setClipRect(page);
             page.render(fileName);
             console.log(fileName);
@@ -121,7 +147,7 @@ page.onResourceReceived = function(response) {
     }
 };
 
-page.open('http://www.duokan.com/reader/www/app.html?id=4b02664d98c245be891e2ec0a661c7ea', function() {
+page.open('http://www.duokan.com/reader/www/app.html?id=' + BOOKID, function() {
 
     page.clearCookies();
     page.evaluate(function() {
