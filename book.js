@@ -78,7 +78,16 @@ var _closeHelper = function() {
 
 var _isEnd = function() {
     return page.evaluate(function() {
-        return jQuery ? 1 == jQuery('.j-md-end').length : false;
+        var footers = jQuery('.j-md-footer div');
+        if(footers.length > 1){
+            var last = footers[footers.length - 1];
+            var texts = $(last).text().split('/');
+            if(2 == texts.length){
+                return texts[0] == texts[1];
+            }
+        }
+
+        return false;
     });
 };
 
