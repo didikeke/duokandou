@@ -16,13 +16,18 @@ var BOOKID = system.args[1];
 var FOLDER = system.args[2];
 
 //set view port size
-if (system.args.length >= 4 && 1 == system.args[3]) {
+if (1 == system.args[3]) {
 
     page.viewportSize = {
         width: 800,
         height: 1600
     };
 
+} else if (3 == system.args[3]) {
+    page.viewportSize = {
+        width: 800,
+        height: 1000
+    };
 } else {
     page.viewportSize = {
         width: 2560,
@@ -132,7 +137,7 @@ var _renderBook = function() {
 };
 
 
-var isMatchedUrl = function(url) {
+var _isMatchedUrl = function(url) {
     if (/duokan\.com/.test(url)) {
         return true;
     } else {
@@ -141,13 +146,13 @@ var isMatchedUrl = function(url) {
 };
 
 page.onResourceRequested = function(request) {
-    if (isMatchedUrl(request.url)) {
+    if (_isMatchedUrl(request.url)) {
         //console.log("requested: " + request.url);
         _pics.push(request.url);
     }
 };
 page.onResourceReceived = function(response) {
-    if (isMatchedUrl(response.url) && 'end' == response.stage) {
+    if (_isMatchedUrl(response.url) && 'end' == response.stage) {
         //console.log("received: " + response.url);
         var index = _pics.indexOf(response.url);
         if (index > -1) {
