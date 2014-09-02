@@ -79,7 +79,7 @@ var _closeHelper = function() {
 var _isEnd = function() {
     return page.evaluate(function() {
         var footers = jQuery('.j-md-footer div');
-        if (footers.length > 1) {
+        if (footers.length > 0) {
             var last = footers[footers.length - 1];
             var texts = $(last).text().split('/');
             if (2 == texts.length) {
