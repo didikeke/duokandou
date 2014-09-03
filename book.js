@@ -11,7 +11,9 @@ if (system.args.length < 3) {
 
 }
 
-var BOOKID = system.args[1];
+var BOOK_URL = 'http://www.duokan.com/reader/www/app.html?id=' + system.args[1];
+
+
 
 var FOLDER = system.args[2];
 
@@ -52,13 +54,13 @@ var _getPageNum = function() {
 
 var _isTextLoaded = function() {
     return page.evaluate(function() {
-        return jQuery ? 0 == jQuery('.loading').length : false;
+        return window['jQuery'] ? 0 == jQuery('.loading').length : false;
     });
 };
 
-var _pics = [];
+var _pics = {};
 var _isPicLoaded = function(callback) {
-    if (0 == _pics.length) {
+    if (0 == _objectSize(_pics)) {
         return true;
     } else {
         return false;
@@ -117,6 +119,8 @@ var _setClipRect = function(page) {
 };
 
 var _renderBook = function() {
+    var timeout = 0;
+    var interval = 200;
     var timer = setInterval(function() {
         if (_isTextLoaded() && _isPicLoaded()) {
             _closeAd();
@@ -132,12 +136,21 @@ var _renderBook = function() {
             } else {
                 _nextPage();
             }
+
+            timeout = 0;
+        } else if(timeout > 40 * 1000){
+            console.log("refresh page, because of timeout")
+            _refreshPage();
+            timeout = 0;
+        } else {
+            timeout += interval;
         }
-    }, 100);
+    }, interval);
 };
 
 
 var _isMatchedUrl = function(url) {
+    
     if (/duokan\.com/.test(url)) {
         return true;
     } else {
@@ -145,29 +158,44 @@ var _isMatchedUrl = function(url) {
     }
 };
 
+var _objectSize = function(obj) {
+    var size = 0;
+    var key;
+    for(key in obj){
+        if(obj.hasOwnProperty(key)){
+            size++;
+        }
+    }
+    return size;
+};
+
+var _refreshPage = function() {
+    page.open(BOOK_URL, function(){
+        _pics = {};
+    });
+};
+
 page.onResourceRequested = function(request) {
     if (_isMatchedUrl(request.url)) {
         //console.log("requested: " + request.url);
-        _pics.push(request.url);
+        _pics[request.url] = true;
     }
 };
 page.onResourceReceived = function(response) {
     if (_isMatchedUrl(response.url) && 'end' == response.stage) {
         //console.log("received: " + response.url);
-        var index = _pics.indexOf(response.url);
-        if (index > -1) {
-            _pics.splice(index, 1);
+        if(_pics[response.url]){
+            delete _pics[response.url];
         }
     }
 };
 
-page.open('http://www.duokan.com/reader/www/app.html?id=' + BOOKID, function() {
-
+page.open(BOOK_URL, function() {
+    console.log('starting...');
     page.clearCookies();
     page.evaluate(function() {
         localStorage.clear();
     });
-
     _renderBook();
 
 });
